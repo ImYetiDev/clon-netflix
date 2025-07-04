@@ -1,0 +1,40 @@
+---
+export const prerender = false; // 👈 ¡Esto es clave para que la URL dinámica funcione!
+
+import Layout from "../layouts/Layout.astro";
+import { searchMovies } from "../lib/tmdb.js";
+
+const url = Astro.url;
+const query = url.searchParams.get("q") || "";
+
+console.log("🌐 URL actual:", url.href);
+console.log("🔍 query param:", query);
+
+let results = [];
+if (query) {
+  results = await searchMovies(query);
+}
+---
+
+<Layout>
+  <h1 class="text-2xl font-bold mb-4">Resultados para: "{query}"</h1>
+
+  {results.length === 0 ? (
+    <p>No se encontraron resultados.</p>
+  ) : (
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+      {results.map((movie) => (
+        <div class="bg-zinc-900 rounded overflow-hidden shadow">
+          <img
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            alt={movie.title}
+            class="w-full"
+          />
+          <div class="p-2">
+            <h2 class="text-sm font-semibold truncate">{movie.title}</h2>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</Layout>

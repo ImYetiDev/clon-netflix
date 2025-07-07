@@ -2,7 +2,7 @@
 export const prerender = false; // 👈 ¡Esto es clave para que la URL dinámica funcione!
 
 import Layout from "../layouts/Layout.astro";
-import { searchMovies } from "../lib/tmdb.js";
+import { searchAll } from "../lib/tmdb.js";
 
 const url = Astro.url;
 const query = url.searchParams.get("q") || "";
@@ -12,7 +12,7 @@ console.log("🔍 query param:", query);
 
 let results = [];
 if (query) {
-  results = await searchMovies(query);
+  results = await searchAll(query);
 }
 ---
 

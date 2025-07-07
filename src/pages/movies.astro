@@ -1,0 +1,19 @@
+---
+export const prerender = false;
+import Layout               from "../layouts/Layout.astro";
+import { getPopularMovies }  from "../lib/tmdb.js";
+const movies = await getPopularMovies();
+---
+
+<Layout>
+  <h1 class="text-2xl font-bold mb-4">Películas populares</h1>
+
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+    {movies.map((m) => (
+      <div class="bg-zinc-900 rounded overflow-hidden shadow">
+        <img src={`https://image.tmdb.org/t/p/w500${m.poster_path}`} alt={m.title} class="w-full" />
+        <div class="p-2"><h2 class="text-sm font-semibold truncate">{m.title}</h2></div>
+      </div>
+    ))}
+  </div>
+</Layout>

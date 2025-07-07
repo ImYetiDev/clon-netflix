@@ -1,39 +1,31 @@
 ---
 // src/components/Navbar.astro
+const current = Astro.url.pathname;          // ruta actual
 ---
 
-<nav
-    class="bg-black border-b border-zinc-800 px-6 py-4 flex items-center justify-between"
->
-    <ul class="flex gap-6 text-sm font-semibold">
-        <li><a href="/" class="hover:text-red-500 transition">Inicio</a></li>
-        <li>
-            <a href="/tv-shows" class="hover:text-red-500 transition"
-                >TV Shows</a
-            >
-        </li>
-        <li>
-            <a href="/movies" class="hover:text-red-500 transition">Movies</a>
-        </li>
-        <li>
-            <a href="/my-netflix" class="hover:text-red-500 transition"
-                >My Netflix</a
-            >
-        </li>
-    </ul>
+<nav class="bg-red-200 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+  <ul class="flex gap-6 text-sm font-semibold">
+    {[
+      { href: '/',           label: 'Inicio'     },
+      { href: '/tv-shows',   label: 'TV Shows'   },
+      { href: '/movies',     label: 'Movies'     },
+      { href: '/my-netflix', label: 'My Netflix' }
+    ].map(({ href, label }) => (
+      <li>
+        <a href={href}
+           class={`transition ${current === href ? 'text-red-500' : 'hover:text-red-500'}`}>
+          {label}
+        </a>
+      </li>
+    ))}
+  </ul>
 
-    <form action="/search" method="get" target="_self" class="flex items-center gap-2">
-        <input
-            type="text"
-            name="q"
-            placeholder="Buscar..."
-            class="bg-zinc-900 border border-zinc-700 text-sm rounded px-3 py-1"
-        />
-        <button
-            type="submit"
-            class="text-white font-semibold hover:text-red-500"
-        >
-            Buscar
-        </button>
-    </form>
+  <form action="/search" method="get" target="_self" class="flex items-center">
+    <input
+      type="text"
+      name="q"
+      placeholder="Buscar..."
+      class="bg-red-900 border border-zinc-700 text-sm rounded px-3 py-1"
+    />
+  </form>
 </nav>

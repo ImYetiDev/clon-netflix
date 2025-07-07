@@ -1,44 +1,30 @@
-// src/lib/tmdb.js
-
-const API_KEY = import.meta.env.TMDB_API_KEY;
+const API_KEY  = import.meta.env.TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 
-console.log('🌐 API_KEY cargada:', API_KEY);
-
-export async function getPopularMovies() {
-  if (!API_KEY) {
-    console.error('❌ No se encontró la API key.');
-    return [];
-  }
-
-  try {
-    const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=es-ES&page=1`);
-    const data = await res.json();
-    return data.results || [];
-  } catch (err) {
-    console.error('❌ Error al conectar con TMDb:', err);
-    return [];
-  }
+function safeFetch(url) {
+  return fetch(url)
+    .then((res) => (res.ok ? res.json() : Promise.reject(res.statusText)))
+    .catch((err) => {
+      console.error('❌ TMDb error:', err);
+      return { results: [] };
+    });
 }
 
-export async function searchMovies(query) {
-  if (!API_KEY || !query) {
-    return [];
-  }
+/* ----------  PELÍCULAS  ---------- */
+export const getPopularMovies = async () =>
+  (await safeFetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=es-ES&page=1`)).results;
 
-  try {
-    const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=es-ES&query=${encodeURIComponent(query)}&page=1`;
-    const res = await fetch(url);
+/* ----------  SERIES (TV SHOWS)  ---------- */
+export const getPopularTVShows = async () =>
+  (await safeFetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&language=es-ES&page=1`)).results;
 
-    if (!res.ok) {
-      console.error('❌ Error al buscar películas:', res.statusText);
-      return [];
-    }
-
-    const data = await res.json();
-    return data.results || [];
-  } catch (err) {
-    console.error('❌ Error al buscar películas:', err);
-    return [];
-  }
-}
+/* ----------  BÚSQUEDA  ---------- */
+export const searchAll = async (query) => {
+  if (!query) return [];
+  // combinamos películas y series (dos peticiones en paralelo)
+  const [movies, shows] = await Promise.all([
+    safeFetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=es-ES&query=${encodeURIComponent(query)}&page=1`),
+    safeFetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&language=es-ES&query=${encodeURIComponent(query)}&page=1`)
+  ]);
+  return [...movies.results, ...shows.results];
+};

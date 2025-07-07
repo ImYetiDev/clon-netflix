@@ -1,53 +1,25 @@
 ---
-// src/components/MovieCard.astro
-export interface Props {
-  movie: any
-  variant?: 'hero' | 'thumb'
-}
-const { movie, variant = 'thumb' } = Astro.props
-
-const img = variant === 'hero'
-  ? `https://image.tmdb.org/t/p/original${movie.backdrop_path ?? movie.poster_path}`
-  : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-
-const year  = movie.release_date?.slice(0, 4) ?? movie.first_air_date?.slice(0, 4) ?? '----'
-const score = movie.vote_average?.toFixed(1) ?? '–'
+const { movie } = Astro.props;
+const imgBase = 'https://image.tmdb.org/t/p/w500';
 ---
-<figure
-  class={`relative overflow-hidden select-none group rounded-xl ${
-    variant === 'hero'
-      ? 'h-[56vh] w-full xl:rounded-3xl'
-      : 'h-48 w-32 sm:h-56 sm:w-40'
-  }`}
->
-  <!-- imagen -->
+
+<figure class="group relative w-[180px] shrink-0 cursor-pointer transition-transform hover:scale-105">
   <img
-    src={img}
-    alt={movie.title ?? movie.name}
+    src={`${imgBase}${movie.poster_path}`}
+    alt={movie.name || movie.title}
+    class="rounded-md w-full h-auto object-cover"
     loading="lazy"
-    class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
   />
 
-  <!-- Overlay – siempre visible en hero, solo hover en thumb -->
+  <!-- Overlay mejorado -->
   <figcaption
-    class={`absolute inset-0 flex flex-col justify-end bg-gradient-to-t
-            from-black/85 via-black/50 to-black/0 text-white p-6
-            transition-opacity duration-300 ${
-              variant === 'hero' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-            }`}
+    class="absolute inset-0 bg-black/80 text-white p-4 flex flex-col justify-start
+           opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"
   >
-    <h2 class={`${variant === 'hero' ? 'text-3xl font-extrabold' : 'text-sm font-semibold'}`}>
-      {movie.title ?? movie.name}
-    </h2>
-
-    <p class="mt-1 text-xs opacity-80">
-      {year} • ⭐ {score}
+    <h3 class="text-sm font-bold leading-tight line-clamp-1">{movie.name || movie.title}</h3>
+    <p class="text-xs opacity-80 mt-1">
+      {(movie.release_date || movie.first_air_date)?.slice(0, 4)} • ⭐ {movie.vote_average?.toFixed(1)}
     </p>
-
-    {variant === 'hero' && (
-      <p class="mt-3 max-w-xl text-sm opacity-90 line-clamp-3">
-        {movie.overview || 'Sin descripción disponible.'}
-      </p>
-    )}
+    <p class="text-xs mt-2 line-clamp-4 opacity-90">{movie.overview}</p>
   </figcaption>
 </figure>

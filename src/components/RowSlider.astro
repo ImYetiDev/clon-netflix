@@ -1,57 +1,53 @@
 ---
-const { title, movies } = Astro.props;
 import MovieCard from './MovieCard.astro';
-const sliderId = `slider-${title.replace(/\s+/g, '-')}`;
----
-<section class="space-y-3 relative group">
-  <h2 class="text-xl font-semibold mb-2">{title}</h2>
 
+const { title, movies = [] } = Astro.props;
+const sliderId = `slider-${title.toLowerCase().replace(/\s+/g, '-')}`;
+---
+
+<style>
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<section class="relative px-6 text-white">
+  <h2 class="text-xl font-bold mb-4">{title}</h2>
+
+  <!-- Slider container -->
   <div class="relative">
     <!-- Botón Izquierdo -->
     <button
-      class="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
-      data-scroll-left={sliderId}
+      type="button"
+      class="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full
+             bg-black/50 text-white text-3xl hover:bg-black/80 transition hidden md:block"
+      onclick={`document.getElementById('${sliderId}').scrollBy({ left: -1000, behavior: 'smooth' })`}
     >
-      ◀
+      &#10094;
     </button>
-
-    <!-- Contenedor deslizable -->
-    <div
-      id={sliderId}
-      class="flex overflow-x-auto scroll-smooth gap-4 pb-2 px-6"
-    >
-      {movies.map((movie) => (
-        <div class="min-w-[180px] flex-shrink-0">
-          <MovieCard movie={movie} />
-        </div>
-      ))}
-    </div>
 
     <!-- Botón Derecho -->
     <button
-      class="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
-      data-scroll-right={sliderId}
+      type="button"
+      class="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full
+             bg-black/50 text-white text-3xl hover:bg-black/80 transition hidden md:block"
+      onclick={`document.getElementById('${sliderId}').scrollBy({ left: 1000, behavior: 'smooth' })`}
     >
-      ▶
+      &#10095;
     </button>
+
+    <!-- Slider -->
+    <div
+      id={sliderId}
+      class="flex gap-4 overflow-hidden hide-scrollbar scroll-smooth"
+    >
+      {movies.map((movie) => (
+        <MovieCard movie={movie} />
+      ))}
+    </div>
   </div>
 </section>
-
-<!-- JavaScript para manejar los botones -->
-<script client:load>
-  document.querySelectorAll('[data-scroll-left]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.scrollLeft;
-      const el = document.getElementById(id);
-      if (el) el.scrollBy({ left: -500, behavior: 'smooth' });
-    });
-  });
-
-  document.querySelectorAll('[data-scroll-right]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.scrollRight;
-      const el = document.getElementById(id);
-      if (el) el.scrollBy({ left: 500, behavior: 'smooth' });
-    });
-  });
-</script>

@@ -1,0 +1,50 @@
+---
+// src/pages/movie/[id].astro
+import { getPopularMovies, getMovieDetails } from '../../lib/tmdb'
+
+export async function getStaticPaths() {
+  const movies = await getPopularMovies()
+
+  return movies.slice(0, 20).map(movie => ({
+    params: { id: String(movie.id) }
+  }))
+}
+
+const { id } = Astro.params
+const movie = await getMovieDetails(id)
+
+const trailer = movie.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+const trailerUrl = trailer
+  ? `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&loop=1&controls=0&playlist=${trailer.key}`
+  : null
+---
+
+<html lang="es">
+  <head>
+    <title>{movie.title}</title>
+    <meta charset="UTF-8" />
+  </head>
+  <body class="bg-black text-white relative">
+    {trailerUrl &&
+      <iframe
+        src={trailerUrl}
+        frameborder="0"
+        allow="autoplay; fullscreen"
+        class="absolute inset-0 w-full h-full object-cover z-0"
+      ></iframe>
+    }
+
+    <div class="relative z-10 p-8 bg-gradient-to-t from-black via-black/70 to-transparent min-h-screen">
+      <h1 class="text-4xl font-bold">{movie.title}</h1>
+      <p class="mt-2 opacity-80">{movie.overview}</p>
+      <div class="mt-4">
+        <span>{movie.release_date?.slice(0, 4)}</span> • 
+        <span class="ml-1">⭐ {movie.vote_average?.toFixed(1)}</span>
+      </div>
+      <div class="mt-6 flex gap-4">
+        <button class="bg-white text-black px-4 py-2 rounded">▶ Reproducir</button>
+        <button class="bg-gray-800 px-4 py-2 rounded">ℹ Más información</button>
+      </div>
+    </div>
+  </body>
+</html>

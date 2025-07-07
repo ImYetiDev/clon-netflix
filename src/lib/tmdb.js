@@ -36,3 +36,7 @@ export const getTrending = async () =>
 /* ----------  POR GÉNERO (para las filas pequeñas)  ---------- */
 export const getMoviesByGenre = async (genreId) =>
   (await safeFetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=es-ES&with_genres=${genreId}&sort_by=popularity.desc&page=1`)).results;
+
+/* ----------  DETALLES DE PELÍCULA  ---------- */
+export const getMovieDetails = async (id) =>
+  await safeFetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=es-ES&append_to_response=videos`);

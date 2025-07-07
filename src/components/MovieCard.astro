@@ -3,7 +3,7 @@ const { movie } = Astro.props;
 const imgBase = 'https://image.tmdb.org/t/p/w500';
 ---
 
-<figure class="group relative w-[180px] shrink-0 cursor-pointer transition-transform hover:scale-105">
+<a href={`/movie/${movie.id}`} class="group relative w-[280px] shrink-0 cursor-pointer transition-transform hover:scale-105">
   <img
     src={`${imgBase}${movie.poster_path}`}
     alt={movie.name || movie.title}
@@ -22,4 +22,4 @@ const imgBase = 'https://image.tmdb.org/t/p/w500';
     </p>
     <p class="text-xs mt-2 line-clamp-4 opacity-90">{movie.overview}</p>
   </figcaption>
-</figure>
+</a>

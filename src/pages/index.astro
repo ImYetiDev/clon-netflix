@@ -3,16 +3,27 @@ import Layout from '../layouts/Layout.astro'
 import HeroBanner from '../components/HeroBanner.astro'
 import RowSlider from '../components/RowSlider.astro'
 
-import { getPopularMovies, getPopularTVShows } from '../lib/tmdb'
+import {
+  getPopularMovies,
+  getMoviesByGenre
+} from '../lib/tmdb'
+
+// Hero principal
 const trending = await getPopularMovies()
-const action   = await getPopularTVShows()
-const comedy   = await getPopularTVShows() // Reemplaza por otra categoría real si quieres
+
+// Filas por género
+const action   = await getMoviesByGenre(28)
+const comedy   = await getMoviesByGenre(35)
+const horror   = await getMoviesByGenre(27)
+const drama    = await getMoviesByGenre(18)
 ---
 <Layout>
   <HeroBanner movie={trending[0]} />
 
   <div class="space-y-8">
-    <RowSlider title="Acción"  movies={action.slice(0, 20)} />
-    <RowSlider title="Comedia" movies={comedy.slice(0, 20)} />
+    <RowSlider title="Acción"   movies={action.slice(0, 20)} />
+    <RowSlider title="Comedia"  movies={comedy.slice(0, 20)} />
+    <RowSlider title="Terror"   movies={horror.slice(0, 20)} />
+    <RowSlider title="Drama"    movies={drama.slice(0, 20)} />
   </div>
 </Layout>

@@ -1,20 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import HeroSlider from '../components/HeroSlider.astro'
+import HeroBanner from '../components/HeroBanner.astro'
 import RowSlider from '../components/RowSlider.astro'
 
-// ✅ Importa funciones de TMDB
-import { getTrending, getMoviesByGenre } from '../lib/tmdb.js'
-
-const trending = await getTrending()
-const action   = await getMoviesByGenre(28)
-const comedy   = await getMoviesByGenre(35)
+import { getPopularMovies, getPopularTVShows } from '../lib/tmdb'
+const trending = await getPopularMovies()
+const action   = await getPopularTVShows()
+const comedy   = await getPopularTVShows() // Reemplaza por otra categoría real si quieres
 ---
 <Layout>
-  <HeroSlider movies={trending.slice(0, 10)} />
+  <HeroBanner movie={trending[0]} />
 
-  <div class="space-y-8 mt-10">
-    <RowSlider title="Acción"  movies={action} />
-    <RowSlider title="Comedia" movies={comedy} />
+  <div class="space-y-8">
+    <RowSlider title="Acción"  movies={action.slice(0, 20)} />
+    <RowSlider title="Comedia" movies={comedy.slice(0, 20)} />
   </div>
 </Layout>

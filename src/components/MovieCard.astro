@@ -1,55 +1,53 @@
 ---
+// src/components/MovieCard.astro
 export interface Props {
-    movie: {
-        id: number;
-        title: string;
-        overview: string;
-        poster_path: string;
-        backdrop_path: string;
-        vote_average: number;
-        release_date: string;
-    };
-    variant?: "hero" | "thumb"; // hero = grande, thumb = pequeña
+  movie: any
+  variant?: 'hero' | 'thumb'
 }
-const { movie, variant = "thumb" } = Astro.props;
-const img =
-    variant === "hero"
-        ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-        : `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+const { movie, variant = 'thumb' } = Astro.props
+
+const img = variant === 'hero'
+  ? `https://image.tmdb.org/t/p/original${movie.backdrop_path ?? movie.poster_path}`
+  : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+
+const year  = movie.release_date?.slice(0, 4) ?? movie.first_air_date?.slice(0, 4) ?? '----'
+const score = movie.vote_average?.toFixed(1) ?? '–'
 ---
-
 <figure
-    class={`relative overflow-hidden select-none group ${
-        variant === "hero" ? "h-[60vh] w-full" : "h-44 w-32 sm:h-56 sm:w-40"
-    }`}
+  class={`relative overflow-hidden select-none group rounded-xl ${
+    variant === 'hero'
+      ? 'h-[56vh] w-full xl:rounded-3xl'
+      : 'h-48 w-32 sm:h-56 sm:w-40'
+  }`}
 >
-    <img
-        src={img}
-        alt={movie.title}
-        loading="lazy"
-        class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-    />
+  <!-- imagen -->
+  <img
+    src={img}
+    alt={movie.title ?? movie.name}
+    loading="lazy"
+    class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+  />
 
-    <!-- Capa de info (solo visible en hover o para la card hero) -->
-    <figcaption class="...">
-        <h2 class="font-bold leading-tight">
-            {movie.title || movie.name || "Sin título"}
-        </h2>
+  <!-- Overlay – siempre visible en hero, solo hover en thumb -->
+  <figcaption
+    class={`absolute inset-0 flex flex-col justify-end bg-gradient-to-t
+            from-black/85 via-black/50 to-black/0 text-white p-6
+            transition-opacity duration-300 ${
+              variant === 'hero' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            }`}
+  >
+    <h2 class={`${variant === 'hero' ? 'text-3xl font-extrabold' : 'text-sm font-semibold'}`}>
+      {movie.title ?? movie.name}
+    </h2>
 
-        {
-            variant === "hero" && (
-                <>
-                    <p class="mt-1 text-xs opacity-80">
-                        {movie.release_date
-                            ? movie.release_date.slice(0, 4)
-                            : "?"}{" "}
-                        • ⭐ {movie.vote_average?.toFixed(1) ?? "?"}
-                    </p>
-                    <p class="mt-2 line-clamp-2 text-sm opacity-90">
-                        {movie.overview || "Sin descripción disponible."}
-                    </p>
-                </>
-            )
-        }
-    </figcaption>
+    <p class="mt-1 text-xs opacity-80">
+      {year} • ⭐ {score}
+    </p>
+
+    {variant === 'hero' && (
+      <p class="mt-3 max-w-xl text-sm opacity-90 line-clamp-3">
+        {movie.overview || 'Sin descripción disponible.'}
+      </p>
+    )}
+  </figcaption>
 </figure>

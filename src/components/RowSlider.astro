@@ -1,0 +1,49 @@
+---
+// src/components/RowSlider.astro
+import { onCleanup } from 'solid-js'
+import MovieCard from './MovieCard.astro'
+
+export interface Props {
+  title: string
+  movies: any[]
+}
+const { title, movies } = Astro.props
+---
+<section class="space-y-3">
+  <h3 class="text-lg font-semibold">{title}</h3>
+
+  <div class="relative">
+    <div class="keen-slider">
+      {movies.map(m => (
+        <div class="keen-slider__slide">
+          <MovieCard movie={m} />
+        </div>
+      ))}
+    </div>
+
+    <button id={`prev-${title}`}
+      class="absolute left-0 top-1/2 -translate-y-1/2 z-10
+             h-full w-8 bg-gradient-to-r from-black/80 to-black/0 text-white">❮</button>
+    <button id={`next-${title}`}
+      class="absolute right-0 top-1/2 -translate-y-1/2 z-10
+             h-full w-8 bg-gradient-to-l from-black/80 to-black/0 text-white">❯</button>
+  </div>
+
+  <script client:load>
+    import KeenSlider from 'keen-slider'
+    const slider = new KeenSlider('.keen-slider', {
+      slides: { perView: 6, spacing: 12 },
+      breakpoints: {
+        '(max-width: 768px)': { perView: 3.5, spacing: 8 },
+      },
+    })
+    document
+      .getElementById(`prev-${title}`)
+      .addEventListener('click', () => slider.prev())
+    document
+      .getElementById(`next-${title}`)
+      .addEventListener('click', () => slider.next())
+
+    onCleanup(() => slider.destroy())
+  </script>
+</section>

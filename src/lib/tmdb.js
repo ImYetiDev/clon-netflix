@@ -28,3 +28,11 @@ export const searchAll = async (query) => {
   ]);
   return [...movies.results, ...shows.results];
 };
+
+/* ----------  TENDENCIAS DE LA SEMANA (hero principal)  ---------- */
+export const getTrending = async () =>
+  (await safeFetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}&language=es-ES`)).results;
+
+/* ----------  POR GÉNERO (para las filas pequeñas)  ---------- */
+export const getMoviesByGenre = async (genreId) =>
+  (await safeFetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=es-ES&with_genres=${genreId}&sort_by=popularity.desc&page=1`)).results;

@@ -1,0 +1,48 @@
+---
+// src/components/HeroSlider.astro
+import { onCleanup } from 'solid-js'       // disponible en Astro 5 para scripts “islands”
+import MovieCard from './MovieCard.astro'
+
+export interface Props { movies: any[] }
+const { movies } = Astro.props
+---
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keen-slider@6.8.5/keen-slider.min.css" />
+
+<div class="relative">
+  <!-- Contenedor del slider -->
+  <div class="keen-slider">
+    {movies.map(m => (
+      <div class="keen-slider__slide">
+        <MovieCard movie={m} variant="hero" />
+      </div>
+    ))}
+  </div>
+
+  <!-- Flechas -->
+  <button id="prev"
+    class="absolute left-2 top-1/2 -translate-y-1/2 z-10
+           rounded-full bg-black/60 p-2 text-white hover:bg-black/80">
+    ❮
+  </button>
+  <button id="next"
+    class="absolute right-2 top-1/2 -translate-y-1/2 z-10
+           rounded-full bg-black/60 p-2 text-white hover:bg-black/80">
+    ❯
+  </button>
+</div>
+
+<!-- Script del slider -->
+<script client:load>
+  import KeenSlider from 'keen-slider'
+
+  const slider = new KeenSlider('.keen-slider', {
+    loop: true,
+    drag: true,
+  })
+
+  document.getElementById('prev').addEventListener('click', () => slider.prev())
+  document.getElementById('next').addEventListener('click', () => slider.next())
+
+  // Limpieza cuando Astro desmonta la isla
+  onCleanup(() => slider.destroy())
+</script>
